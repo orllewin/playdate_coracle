@@ -9,7 +9,7 @@ height = 240
 alpha = 1.0
 pi = 3.14159265
 
-DrawingMode = {Stroke = "0", Fill = "1", FillAndStroke = "2"}
+DrawingMode = {Stroke = "0", Fill = "1"}
 coracleDrawMode = DrawingMode.Fill
 
 function invertDisplay()
@@ -19,6 +19,30 @@ end
 function crankChange()
 	local change, acceleratedChange = playdate.getCrankChange()
 	return change
+end
+
+function aPressed()
+  return playdate.buttonJustPressed(playdate.kButtonA)
+end
+
+function bPressed()
+  return playdate.buttonJustPressed(playdate.kButtonB)
+end
+
+function upPressed()
+  return playdate.buttonIsPressed(playdate.kButtonUp)
+end
+
+function downPressed()
+  return playdate.buttonIsPressed(playdate.kButtonDown)
+end
+
+function leftPressed()
+  return playdate.buttonIsPressed(playdate.kButtonLeft)
+end
+
+function rightPressed()
+  return playdate.buttonIsPressed(playdate.kButtonRight)
 end
 
 function background()
@@ -35,27 +59,18 @@ function noFill()
 end
 
 function stroke()
-  if(coracleDrawMode == DrawingMode.Fill) 
-  then
-	coracleDrawMode = DrawingMode.FillAndStroke
-  end
+ coracleDrawMode = DrawingMode.Stroke
 end
 
 function fill()
-  if(coracleDrawMode == DrawingMode.Stroke)
-  then
-	coracleDrawMode = DrawingMode.FillAndStroke
-  end
+  coracleDrawMode = DrawingMode.Fill
 end
 
 -- alpha: 0.0 to 1.0
-function fill(alpha)
-  alpha = alpha
+function fill(_alpha)
+  alpha = _alpha
   graphics.setDitherPattern(1.0 - alpha, playdate.graphics.image.kDitherTypeBayer8x8)
-  if(mode == DrawingMode.Stroke) 
-  then
-	mode = DrawingMode.FillAndStroke
-  end
+  coracleDrawMode = DrawingMode.Fill
 end
 
 -- Maths
@@ -73,28 +88,28 @@ end
 
 -- Draw
 function circle(x, y, r)
-	if(coracleDrawMode == DrawingMode.FillAndStroke)
-	  then
+	if(coracleDrawMode == DrawingMode.Fill) then
 		graphics.fillCircleAtPoint(x, y, r)
+  	else
 		graphics.drawCircleAtPoint(x, y, r)
-	  elseif(coracleDrawMode == DrawingMode.Fill)
-	  then
-		graphics.fillCircleAtPoint(x, y, r)
-	  else
-		graphics.drawCircleAtPoint(x, y, r)
-	  end
+  	end
 end
 
 function circleP(p, r)
-	if(coracleDrawMode == DrawingMode.FillAndStroke)
-	  then
-		graphics.fillCircleAtPoint(p.x, p.y, r)
-		graphics.drawCircleAtPoint(p.x, p.y, r)
-	  elseif(coracleDrawMode == DrawingMode.Fill)
+	if(coracleDrawMode == DrawingMode.Fill)
 	  then
 		graphics.fillCircleAtPoint(p.x, p.y, r)
 	  else
 		graphics.drawCircleAtPoint(p.x, p.y, r)
+	  end
+end
+
+function circleV(vector, r)
+	if(coracleDrawMode == DrawingMode.Fill)
+	  then
+		graphics.fillCircleAtPoint(vector.x, vector.y, r)
+	  else
+		graphics.drawCircleAtPoint(vector.x, vector.y, r)
 	  end
 end
 
