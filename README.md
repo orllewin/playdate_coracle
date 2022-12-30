@@ -170,18 +170,18 @@ function playdate.update()
 		body.velocity:plus(blackholeDirection)
 		body.location:plus(body.velocity)
 		
-		for j = 1, particleCount 
-		do
-		  if (i ~= j) then
-				local other = particles[j]
-				bodyDirection = vectorMinus(body.location, other.location)
-				bodyDirection:normalise()
-				bodyDirection:times(0.04)
-				body.velocity:plus(bodyDirection)
-				body.velocity:limit(4.0)
-				body.location:plus(body.velocity)
-		  end
+	for j = 1, particleCount 
+	do
+		if (i ~= j) then
+			local other = particles[j]
+			bodyDirection = vectorMinus(body.location, other.location)
+			bodyDirection:normalise()
+			bodyDirection:times(0.04)
+			body.velocity:plus(bodyDirection)
+			body.velocity:limit(4.0)
+			body.location:plus(body.velocity)
 		end
+	end
   end
 end
 
