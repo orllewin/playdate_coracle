@@ -3,11 +3,13 @@ import 'CoreLibs/object'
 
 local graphics <const> = playdate.graphics
 local _cos, _sin = math.cos, math.sin
+local _random = math.random
 
 width = 400
 height = 240
 alpha = 1.0
 pi = 3.14159265
+tau = 6.28318
 
 DrawingMode = {Stroke = "0", Fill = "1"}
 coracleDrawMode = DrawingMode.Fill
@@ -86,7 +88,26 @@ function sin(value)
 	return _sin(value)
 end
 
+function random(a, b)
+  if(a == nil and b == nil)then
+    return _random()
+  elseif(b == nil)then
+    return _random(a)
+  else
+    return _random(a, b)
+  end
+end
+
+function perlinNoise(x, y)
+	return playdate.graphics.perlin(x, y, 1)
+end
+
 -- Draw
+
+function text(text, x, y)
+  graphics.drawText(text, x, y)
+end
+
 function circle(x, y, r)
 	if(coracleDrawMode == DrawingMode.Fill) then
 		graphics.fillCircleAtPoint(x, y, r)

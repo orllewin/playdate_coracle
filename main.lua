@@ -1,20 +1,25 @@
 import 'Coracle/coracle'
 import 'Coracle/vector'
 
-local maxSpeed = 2.2
-local particleCount = 5
+local bodyCount = 100
 local tailLength = 20
 local frame = 0
 
-local blackhole = Vector(width/2, height/2)
-local blackholeSize = 35
-local blackholeMass = 0.4
-local particles = {}
+local speed = 4.0
+local scale = 0.003
+local bodies = {}
 
-for i = 1 , particleCount do
+local xOffset = 0.0
+local yOffset = 0.0
+
+local epochAge = 0
+local epochLength = 100
+
+for i = 1 , bodyCount do
 	local boid = {}
-	boid.location = Vector(math.random(width), math.random(height))
-	boid.velocity = Vector(0, 0)
+	boid.location = Vector(random(width), random(height))
+	boid.age = 0
+	boid.deathAge = random(50, 200)
 	boid.tailXs = {}
 	boid.tailYs = {}
 	
@@ -22,63 +27,79 @@ for i = 1 , particleCount do
 		boid.tailXs[t] = -1
 		boid.tailYs[t] = -1
 	end
-	table.insert(particles, boid)
+	table.insert(bodies, boid)
 end
+	
+xOffset = random(10000)
+yOffset = random(10000)
+
+--invertDisplay()
 
 function playdate.update()
 	background()
+	
 	frame = frame + 1
 	
-	--Central Mass
-	local crank = crankChange()
-	if(crank > 0)then
-		blackholeSize = blackholeSize + 0.75
-		blackholeMass = blackholeMass + 0.01
-	elseif (crank < 0) then
-		blackholeSize = blackholeSize - 0.75
-		blackholeMass = blackholeMass - 0.01
-	end
-	
-	fill(0.25)
-	circle(blackhole.x, blackhole.y, blackholeSize)
+	for i = 1, #bodies do
 		
-	--Particles
-	fill(1.0)
-
-	for i = 1, particleCount do
+		local body = bodies[i]
+		circle(body.location.x, body.location.y, 2)
 		
-		local body = particles[i]
+		for t = 1, tailLength do
+			point(body.tailXs[t], body.tailYs[t])
+		end
 		
-		fill(1.0)
-		circle(body.location.x, body.location.y, 10)
+		local a = 2 * tau * perlinNoise((body.location.x + xOffset) * scale, (body.location.y + yOffset) * scale)
+		body.location.x = body.location.x + (cos(a) * speed)
+		body.location.y = body.location.y + (sin(a) * speed)
 		
 		local tailIndex = frame % tailLength
 		body.tailXs[tailIndex] = body.location.x
 		body.tailYs[tailIndex] = body.location.y
 		
-		fill(0.5)
-		for t = 1, tailLength do
-			circle(body.tailXs[t], body.tailYs[t], 3)
+		if (body.location.x > width)then
+			body.location.x = random(width)
+			body.location.y = random(height)
+		end
+		if (body.location.x < 0)then 
+			body.location.x = random(width)
+			body.location.y = random(height)
+		end
+		if (body.location.y > height)then
+			body.location.x = random(width)
+			body.location.y = random(height)
+		 end
+		if (body.location.y < 0)then
+			body.location.x = random(width)
+			body.location.y = random(height)
 		end
 		
-		local blackholeDirection = vectorMinus(blackhole, body.location)
-		blackholeDirection:normalise()
-		blackholeDirection:times(blackholeMass)
+		body.age = body.age + 1
 		
-		body.velocity:plus(blackholeDirection)
-		body.location:plus(body.velocity)
-		
-	for j = 1, particleCount 
-	do
-		if (i ~= j) then
-			local other = particles[j]
-			bodyDirection = vectorMinus(body.location, other.location)
-			bodyDirection:normalise()
-			bodyDirection:times(0.04)
-			body.velocity:plus(bodyDirection)
-			body.velocity:limit(4.0)
-			body.location:plus(body.velocity)
+		if(body.age > body.deathAge)then
+			body.location.x = random(width)
+			body.location.y = random(height)
+			body.age = 0
+			body.deathAge = random(50, 200)
 		end
 	end
+	
+	local crank =  crankChange()
+	
+	if(crank > 0)then
+		scale = scale + 0.0001
+	elseif(crank < 0)then
+		scale = scale - 0.0001
+	end
+	
+	text('Scale: ' .. scale, 5, height - 20)
+	
+	
+	epochAge = epochAge + 1
+	
+	if(epochAge > epochLength)then
+		epochAge = 0
+		xOffset = random(10000)
+		yOffset = random(10000)
 	end
 end
