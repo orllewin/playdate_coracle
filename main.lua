@@ -1,12 +1,12 @@
 import 'Coracle/coracle'
 import 'Coracle/vector'
 
-local bodyCount = 100
-local tailLength = 20
+local bodyCount = 75
+local tailLength = 10
 local frame = 0
 
-local speed = 4.0
-local scale = 0.003
+local speed = 2.75
+local scale = 0.010
 local bodies = {}
 
 local xOffset = 0.0
@@ -33,7 +33,7 @@ end
 xOffset = random(10000)
 yOffset = random(10000)
 
---invertDisplay()
+scaleDisplay(2)
 
 function playdate.update()
 	background()
@@ -43,7 +43,7 @@ function playdate.update()
 	for i = 1, #bodies do
 		
 		local body = bodies[i]
-		circle(body.location.x, body.location.y, 2)
+		circle(body.location.x, body.location.y, 1)
 		
 		for t = 1, tailLength do
 			point(body.tailXs[t], body.tailYs[t])
@@ -91,10 +91,7 @@ function playdate.update()
 	elseif(crank < 0)then
 		scale = scale - 0.0001
 	end
-	
-	text('Scale: ' .. scale, 5, height - 20)
-	
-	
+
 	epochAge = epochAge + 1
 	
 	if(epochAge > epochLength)then

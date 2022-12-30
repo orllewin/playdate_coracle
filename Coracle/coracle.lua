@@ -18,6 +18,28 @@ function invertDisplay()
 	playdate.display.setInverted(true)
 end
 
+function scaleDisplay(scale)
+  if(scale == 1)then
+    width = 400
+    height = 240
+    playdate.display.setScale(1)
+  elseif(scale == 2)then
+    width = 200
+    height = 120
+    playdate.display.setScale(2)
+  elseif(scale == 4)then
+    width = 100
+    height = 60
+    playdate.display.setScale(4)
+  elseif(scale == 8)then
+    width = 50
+    height = 30
+    playdate.display.setScale(8)
+  else
+    print("Invalid scale value, use 1, 2, 4, or 8")
+  end
+end
+
 function crankChange()
 	local change, acceleratedChange = playdate.getCrankChange()
 	return change
