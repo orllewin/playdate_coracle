@@ -1,5 +1,8 @@
 ## Metaballs
 ![](./readme_assets/pd_metaballs.gif)
+
+This runs slower on hardware (7fps versus 23fps from the simulator above)
+
 ```lua
 import 'Coracle/coracle'
 import 'Coracle/vector'
