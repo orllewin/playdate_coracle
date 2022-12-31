@@ -2,7 +2,7 @@ import 'CoreLibs/graphics'
 import 'CoreLibs/object'
 
 local graphics <const> = playdate.graphics
-local _cos, _sin = math.cos, math.sin
+local _cos, _sin, _sqrt = math.cos, math.sin, math.sqrt
 local _random = math.random
 
 width = 400
@@ -108,6 +108,14 @@ end
 
 function sin(value)
 	return _sin(value)
+end
+
+function sqrt(value)
+  return _sqrt(value)
+end
+
+function fastSqrt(value, exponent)
+    return value^exponent
 end
 
 function random(a, b)

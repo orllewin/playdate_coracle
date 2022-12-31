@@ -1,102 +1,82 @@
 import 'Coracle/coracle'
 import 'Coracle/vector'
 
-local bodyCount = 75
-local tailLength = 10
-local frame = 0
+scaleDisplay(8)
 
-local speed = 2.75
-local scale = 0.010
-local bodies = {}
+local maxSpeed = 0.9
+local particleCount = 3
 
-local xOffset = 0.0
-local yOffset = 0.0
+local blackhole = Vector(width/2, height/2)
+local blackholeMass = 0.12
 
-local epochAge = 0
-local epochLength = 100
+--Metaball fields
+local xD = 0
+local yD = 0
+local sum = 0
+local p = nil
 
-for i = 1 , bodyCount do
-	local boid = {}
-	boid.location = Vector(random(width), random(height))
-	boid.age = 0
-	boid.deathAge = random(50, 200)
-	boid.tailXs = {}
-	boid.tailYs = {}
-	
-	for t = 1, tailLength do
-		boid.tailXs[t] = -1
-		boid.tailYs[t] = -1
-	end
-	table.insert(bodies, boid)
+local particles = {}
+
+for i = 1 , particleCount do
+	local particle = {}
+	particle.location = Vector(math.random(width), math.random(height))
+	particle.velocity = Vector(0, 0)
+	particle.r = math.random(1,2)
+	table.insert(particles, particle)
 end
-	
-xOffset = random(10000)
-yOffset = random(10000)
-
-scaleDisplay(2)
 
 function playdate.update()
 	background()
 	
-	frame = frame + 1
-	
-	for i = 1, #bodies do
-		
-		local body = bodies[i]
-		circle(body.location.x, body.location.y, 1)
-		
-		for t = 1, tailLength do
-			point(body.tailXs[t], body.tailYs[t])
-		end
-		
-		local a = 2 * tau * perlinNoise((body.location.x + xOffset) * scale, (body.location.y + yOffset) * scale)
-		body.location.x = body.location.x + (cos(a) * speed)
-		body.location.y = body.location.y + (sin(a) * speed)
-		
-		local tailIndex = frame % tailLength
-		body.tailXs[tailIndex] = body.location.x
-		body.tailYs[tailIndex] = body.location.y
-		
-		if (body.location.x > width)then
-			body.location.x = random(width)
-			body.location.y = random(height)
-		end
-		if (body.location.x < 0)then 
-			body.location.x = random(width)
-			body.location.y = random(height)
-		end
-		if (body.location.y > height)then
-			body.location.x = random(width)
-			body.location.y = random(height)
-		 end
-		if (body.location.y < 0)then
-			body.location.x = random(width)
-			body.location.y = random(height)
-		end
-		
-		body.age = body.age + 1
-		
-		if(body.age > body.deathAge)then
-			body.location.x = random(width)
-			body.location.y = random(height)
-			body.age = 0
-			body.deathAge = random(50, 200)
-		end
-	end
-	
-	local crank =  crankChange()
-	
+	--Central Mass
+	local crank = crankChange()
 	if(crank > 0)then
-		scale = scale + 0.0001
-	elseif(crank < 0)then
-		scale = scale - 0.0001
+		blackholeMass = blackholeMass + 0.01
+	elseif (crank < 0) then
+		blackholeMass = blackholeMass - 0.01
 	end
-
-	epochAge = epochAge + 1
+		
+	for i = 1, particleCount do
+		
+		local body = particles[i]
+				
+		local blackholeDirection = vectorMinus(blackhole, body.location)
+		blackholeDirection:normalise()
+		blackholeDirection:times(blackholeMass)
+		
+		body.velocity:plus(blackholeDirection)
+		body.location:plus(body.velocity)
+		
+		for j = 1, particleCount do
+			if (i ~= j) then
+				local other = particles[j]
+				bodyDirection = vectorMinus(body.location, other.location)
+				bodyDirection:normalise()
+				bodyDirection:times(0.04)
+				body.velocity:plus(bodyDirection)
+				body.velocity:limit(maxSpeed)
+				body.location:plus(body.velocity)
+			end
+		end
+	end
 	
-	if(epochAge > epochLength)then
-		epochAge = 0
-		xOffset = random(10000)
-		yOffset = random(10000)
+	--Metaballs
+	for x = 0, width do
+		for y = 0, height do
+			sum = 0
+			for i = 1, #particles do
+				p = particles[i]
+				xD = p.location.x - x
+			  yD = p.location.y - y
+				sum += p.r / math.sqrt(xD * xD + yD * yD)
+			end
+
+			if(sum > 0.7)then
+				point(x, y)
+			end
+		end
 	end
+	
+	--For optimising, draw FPS on-screen:
+	--playdate.drawFPS(1, 1)
 end
