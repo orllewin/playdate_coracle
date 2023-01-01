@@ -1,7 +1,7 @@
 ## Metaballs
 ![](./readme_assets/pd_metaballs.gif)
 
-This runs slower on hardware (7fps versus 23fps from the simulator above), the particle logic is from the 'Particles' drawing.
+This runs slower on hardware (7fps versus 23fps from the simulator above), the particle logic is from the 'Particles' drawing. [View an implementation in C with improved performance](https://github.com/orllewin/playdate_metaballs_c).
 
 ```lua
 import 'Coracle/coracle'
