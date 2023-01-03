@@ -1,80 +1,79 @@
 import 'Coracle/coracle'
-import 'Coracle/vector'
+import 'Coracle/line'
 
-scaleDisplay(8)
+local lines = {}
+local lineCount = 8
+local velocity = 4
 
-local maxSpeed = 0.9
-local particleCount = 3
-
-local blackhole = Vector(width/2, height/2)
-local blackholeMass = 0.12
-
---Metaball fields
-local xD = 0
-local yD = 0
-local sum = 0
-local p = nil
-
-local particles = {}
-
-for i = 1 , particleCount do
-	local particle = {}
-	particle.location = Vector(math.random(width), math.random(height))
-	particle.velocity = Vector(0, 0)
-	particle.r = math.random(1,2)
-	table.insert(particles, particle)
+for i = 1 , lineCount do
+	local walkingLine = {}
+	local line = Line(math.random(width), math.random(height), math.random(width), math.random(height))
+	walkingLine.line = line
+	walkingLine.x1Direction = 1
+	if(math.random(100) > 50)then
+		walkingLine.x1Direction = -1
+	end
+	walkingLine.y1Direction = 1
+	if(math.random(100) > 50)then
+		walkingLine.y1Direction = -1
+	end
+	walkingLine.x2Direction = 1
+	if(math.random(100) > 50)then
+		walkingLine.x2Direction = -1
+	end
+	walkingLine.y2Direction = 1
+	if(math.random(100) > 50)then
+		walkingLine.y2Direction = -1
+	end
+	table.insert(lines, walkingLine)
 end
 
 function playdate.update()
 	background()
 	
-	--Central Mass
-	local crank = crankChange()
-	if(crank > 0)then
-		blackholeMass = blackholeMass + 0.01
-	elseif (crank < 0) then
-		blackholeMass = blackholeMass - 0.01
-	end
+	for i = 1, lineCount do
 		
-	for i = 1, particleCount do
+		local walkingLine = lines[i]
 		
-		local body = particles[i]
-				
-		local blackholeDirection = vectorMinus(blackhole, body.location)
-		blackholeDirection:normalise()
-		blackholeDirection:times(blackholeMass)
+		--update
+		walkingLine.line.x1 += (velocity * walkingLine.x1Direction)
+		walkingLine.line.y1 += (velocity * walkingLine.y1Direction)
+		walkingLine.line.x2 += (velocity * walkingLine.x2Direction)
+		walkingLine.line.y2 += (velocity * walkingLine.y2Direction)
 		
-		body.velocity:plus(blackholeDirection)
-		body.location:plus(body.velocity)
-		
-		for j = 1, particleCount do
-			if (i ~= j) then
-				local other = particles[j]
-				bodyDirection = vectorMinus(body.location, other.location)
-				bodyDirection:normalise()
-				bodyDirection:times(0.04)
-				body.velocity:plus(bodyDirection)
-				body.velocity:limit(maxSpeed)
-				body.location:plus(body.velocity)
-			end
+		--check bounds
+		if(walkingLine.line.x1 > width or walkingLine.line.x1 < 0)then
+			walkingLine.x1Direction *= -1
 		end
-	end
-	
-	--Metaballs
-	for x = 0, width do
-		for y = 0, height do
-			sum = 0
-			for i = 1, #particles do
-				p = particles[i]
-				xD = p.location.x - x
-			  yD = p.location.y - y
-				sum += p.r / math.sqrt(xD * xD + yD * yD)
-			end
-
-			if(sum > 0.7)then
-				point(x, y)
-			end
+		
+		if(walkingLine.line.y1 > height or walkingLine.line.y1 < 0)then
+			walkingLine.y1Direction *= -1
 		end
+		
+		if(walkingLine.line.x2 > width or walkingLine.line.x2 < 0)then
+			walkingLine.x2Direction *= -1
+		end
+		
+		if(walkingLine.line.y2 > height or walkingLine.line.y2 < 0)then
+			walkingLine.y2Direction *= -1
+		end
+		
+		--look for intersections
+		for j = 1, lineCount do
+			if(j ~= i)then
+				local otherWalkingLine = lines[j]
+				local otherLine = otherWalkingLine.line
+				local intersect = walkingLine.line:intersects(otherLine)
+				if(intersect.x ~= -1)then
+					circle(intersect.x, intersect.y, 4)
+				end
+			end
+			
+		end
+		
+		--draw
+		walkingLine.line:draw()
+		
 	end
 	
 	--For optimising, draw FPS on-screen:
