@@ -1,6 +1,7 @@
 -- Playdate Coracle: Line
 -- Copyright (C) 2022 Orllewin
 import 'Coracle/point'
+import 'Coracle/vector'
 
 class('Line').extends()
 
