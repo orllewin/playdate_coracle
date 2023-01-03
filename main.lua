@@ -1,80 +1,53 @@
 import 'Coracle/coracle'
-import 'Coracle/line'
 
-local lines = {}
-local lineCount = 8
-local velocity = 4
+local t = 0.0
+local donut = false
+local cameraZ = 7.0
+local cX = width/2
+local cY = height/2
 
-for i = 1 , lineCount do
-	local walkingLine = {}
-	local line = Line(math.random(width), math.random(height), math.random(width), math.random(height))
-	walkingLine.line = line
-	walkingLine.x1Direction = 1
-	if(math.random(100) > 50)then
-		walkingLine.x1Direction = -1
-	end
-	walkingLine.y1Direction = 1
-	if(math.random(100) > 50)then
-		walkingLine.y1Direction = -1
-	end
-	walkingLine.x2Direction = 1
-	if(math.random(100) > 50)then
-		walkingLine.x2Direction = -1
-	end
-	walkingLine.y2Direction = 1
-	if(math.random(100) > 50)then
-		walkingLine.y2Direction = -1
-	end
-	table.insert(lines, walkingLine)
-end
+invertDisplay()
 
 function playdate.update()
 	background()
 	
-	for i = 1, lineCount do
-		
-		local walkingLine = lines[i]
-		
-		--update
-		walkingLine.line.x1 += (velocity * walkingLine.x1Direction)
-		walkingLine.line.y1 += (velocity * walkingLine.y1Direction)
-		walkingLine.line.x2 += (velocity * walkingLine.x2Direction)
-		walkingLine.line.y2 += (velocity * walkingLine.y2Direction)
-		
-		--check bounds
-		if(walkingLine.line.x1 > width or walkingLine.line.x1 < 0)then
-			walkingLine.x1Direction *= -1
+	if(aPressed()) then	donut = not donut end
+	
+	change = crankChange()
+	
+	if(change < 0) then
+		if(cameraZ > 5)then
+			cameraZ -= 0.1
 		end
-		
-		if(walkingLine.line.y1 > height or walkingLine.line.y1 < 0)then
-			walkingLine.y1Direction *= -1
+	elseif(change > 0) then
+		if(cameraZ < 12)then
+			cameraZ += 0.1
 		end
-		
-		if(walkingLine.line.x2 > width or walkingLine.line.x2 < 0)then
-			walkingLine.x2Direction *= -1
-		end
-		
-		if(walkingLine.line.y2 > height or walkingLine.line.y2 < 0)then
-			walkingLine.y2Direction *= -1
-		end
-		
-		--look for intersections
-		for j = 1, lineCount do
-			if(j ~= i)then
-				local otherWalkingLine = lines[j]
-				local otherLine = otherWalkingLine.line
-				local intersect = walkingLine.line:intersects(otherLine)
-				if(intersect.x ~= -1)then
-					circle(intersect.x, intersect.y, 4)
-				end
-			end
-			
-		end
-		
-		--draw
-		walkingLine.line:draw()
-		
 	end
+	
+	t += 0.04
+	
+	for i = 90, 0, -1  do
+	
+		local q = (i * i)
+		local sQ = sin(q)
+		
+		local b
+		if(donut)then
+			b = i % 6 + t + i
+		else
+			b = i % 6 + t
+		end
+	
+		local p = i + t
+		local z = cameraZ + cos(b) * 3 + cos(p) * sQ
+		local s = 100 / z / z
+		
+		fill(1/(s * 0.35))
+		
+		circle((cX * (z + sin(b) * 5 + sin(p) * sQ) / z), (cY + cX * (cos(q)- cos(b+t))/z), s)
+	end
+
 	
 	--For optimising, draw FPS on-screen:
 	--playdate.drawFPS(1, 1)
