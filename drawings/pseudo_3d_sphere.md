@@ -1,3 +1,9 @@
+## Pseudo 3D Sphere
+![](./readme_assets/pd_pseudo_sphere.gif)
+
+A port of the [dwitter.net/d/23879](https://beta.dwitter.net/d/23879), just to try and figure out what's going on in that heavily compressed optmised code. This will not run well on hardware, so don't even try.
+
+```lua
 import 'Coracle/coracle'
 
 invertDisplay()
@@ -34,3 +40,4 @@ function playdate.update()
 		z = cos(X / d - t * 11) * Y/4 / d
 	end
 end
+```
