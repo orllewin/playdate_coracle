@@ -1,3 +1,9 @@
+## Tunnel
+![](./readme_assets/pd_tunnel.gif)
+
+A port of the [Coracle drawing](https://orllewin.github.io/coracle/drawings/ports/tunnel/), which is a port of a [Dwitter sketch](https://www.dwitter.net/d/26555)
+
+```lua
 import 'Coracle/coracle'
 
 invertDisplay()
@@ -25,3 +31,4 @@ function playdate.update()
 		circle(x, y + yOffset,  z/15)
 	end
 end
+```
