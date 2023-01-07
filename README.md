@@ -14,4 +14,5 @@ Simple code experiments for Playdate, mostly ported from [Coracle](https://orlle
 * [Pseudo 3D Sphere](./drawings/pseudo_3d_sphere.md)
 * [Tunnel](./drawings/tunnel.md)
 * [Walking Lines](./drawings/walking_lines.md)
+* [Wormhole](./drawings/wormhole.md)
 

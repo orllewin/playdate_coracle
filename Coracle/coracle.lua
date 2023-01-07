@@ -2,7 +2,7 @@ import 'CoreLibs/graphics'
 import 'CoreLibs/object'
 
 local graphics <const> = playdate.graphics
-local _cos, _sin, _sqrt = math.cos, math.sin, math.sqrt
+local _cos, _sin, _sqrt, _min, _max = math.cos, math.sin, math.sqrt, math.min, math.max
 local _random = math.random
 
 width = 400
@@ -98,8 +98,20 @@ function fill(_alpha)
 end
 
 -- Maths
+function map(value, start1, stop1, start2, stop2)
+  return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
+end
+
 function random(a, b)
 	return math.random(a, b)
+end
+
+function min(a, b)
+  return _min(a, b)
+end
+
+function max(a, b)
+  return _max(a, b)
 end
 
 function cos(value)
