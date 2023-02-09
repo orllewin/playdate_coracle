@@ -10,6 +10,7 @@ height = 240
 alpha = 1.0
 pi = 3.14159265
 tau = 6.28318
+e = 2.71828 --Euler's number
 
 DrawingMode = {Stroke = "0", Fill = "1"}
 coracleDrawMode = DrawingMode.Fill
@@ -150,12 +151,20 @@ function text(text, x, y)
   graphics.drawText(text, x, y)
 end
 
+function rect(x, y, width, height)
+  if(coracleDrawMode == DrawingMode.Fill) then
+    graphics.fillRect(x, y, width, height)
+  else
+    graphics.rect(x, y, width, height)
+  end
+end
+
 function circle(x, y, r)
 	if(coracleDrawMode == DrawingMode.Fill) then
 		graphics.fillCircleAtPoint(x, y, r)
-  	else
+	else
 		graphics.drawCircleAtPoint(x, y, r)
-  	end
+	end
 end
 
 function circleP(p, r)

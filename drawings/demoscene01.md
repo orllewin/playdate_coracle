@@ -1,3 +1,8 @@
+## Demoscene 01
+
+![](./readme_assets/pd_demoscene01.gif)
+
+```lua
 import 'Coracle/coracle'
 import 'Coracle/vector3d'
 
@@ -95,3 +100,4 @@ function mapToSphere(x, y, radius)
 	local latitude = movement * math.atan(e^(y/radius)) - pi/8
 	return Vector3D(radius * cos(latitude) * cos(longitude),  radius * cos(latitude) * sin(longitude),  radius * sin(latitude))
 end
+```
